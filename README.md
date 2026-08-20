@@ -4,9 +4,6 @@ Beautiful markdown reading in Obsidian, powered by [magzdown.com](https://magzdo
 
 Magzdown is a magazine-style reader that turns your notes into immersive, typographically refined reading sessions. This plugin embeds the Magzdown reader in a side pane so you can write in Obsidian and read what you write — live, in a different font, with the active note mirrored in real time.
 
-![The Magzdown pane rendering a note alongside the Obsidian editor.](./docs/screenshot-pane.png)
-*The Magzdown pane rendering a note alongside the Obsidian editor.*
-
 ## Features
 
 - **Live preview**: The active note renders in the Magzdown pane as you type, with a 500ms debounce so it stays responsive.
@@ -46,11 +43,11 @@ Changes apply instantly in any open Magzdown pane — no save button.
 ## Requirements
 
 - Obsidian Desktop (this plugin is desktop-only; Obsidian Mobile lacks the iframe support Magzdown needs).
-- An internet connection — the reader is loaded from `https://magzdown.com/embed`.
+- An internet connection — the reader is loaded from `https://www.magzdown.com/embed`.
 
 ## Privacy
 
-The plugin sends your active note's markdown content and basic frontmatter (`title`, `author`, `date`) to `https://magzdown.com/embed` via the browser's `postMessage` API, scoped to the magzdown.com origin. No content is stored on magzdown.com servers — the reader is fully client-side.
+The plugin sends your active note's markdown content and basic frontmatter (`title`, `author`, `date`) to `https://www.magzdown.com/embed` via the browser's `postMessage` API, scoped to the magzdown.com origin. No content is stored on magzdown.com servers — the reader is fully client-side.
 
 ## Contributing and releases
 

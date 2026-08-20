@@ -10,6 +10,11 @@ import type { MagzdownSettings } from './settings';
 
 export const VIEW_TYPE_MAGZDOWN = 'magzdown-view';
 
+interface IncomingEmbedMessage {
+  version?: unknown;
+  type?: unknown;
+}
+
 export class MagzdownView extends ItemView {
   private plugin: MagzdownPlugin;
   private iframe: HTMLIFrameElement | null = null;
@@ -28,7 +33,7 @@ export class MagzdownView extends ItemView {
   private static readonly READY_TIMEOUT_MS = 8000;
 
   // SYNC-02: Debounce timer for editor-change events
-  private debounceTimer: ReturnType<typeof setTimeout> | null = null;
+  private debounceTimer: number | null = null;
 
   // Track last known markdown leaf — getActiveViewOfType returns null when side pane has focus
   private lastMarkdownLeaf: WorkspaceLeaf | null = null;
@@ -59,34 +64,17 @@ export class MagzdownView extends ItemView {
     const container = this.contentEl;
     container.empty();
 
-    // Iframe fills the entire pane
-    container.style.padding = '0';
-    container.style.overflow = 'hidden';
+    // Iframe fills the entire pane — styling lives in styles.css
+    container.addClass('magzdown-view-content');
 
     // D-05/D-08: Splash element reused by Plan 02 retry flow — store on the instance
     this.splashEl = container.createDiv({ cls: 'magzdown-splash' });
-    this.splashEl.setAttribute(
-      'style',
-      'display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; gap:12px; font-family:system-ui,sans-serif;'
-    );
-    this.splashEl.createEl('div', {
-      text: 'Magzdown',
-      attr: { style: 'font-size:24px; font-weight:600; letter-spacing:-0.025em;' },
-    });
-    this.splashEl.createEl('div', {
-      attr: {
-        style:
-          'width:24px; height:24px; border:2px solid currentColor; border-top-color:transparent; border-radius:50%; animation:magzdown-spin 0.8s linear infinite;',
-      },
-    });
-    container.createEl('style', {
-      text: '@keyframes magzdown-spin { to { transform: rotate(360deg); } }',
-    });
+    this.splashEl.createDiv({ cls: 'magzdown-splash-title', text: 'Magzdown' });
+    this.splashEl.createDiv({ cls: 'magzdown-splash-spinner' });
 
     // PLUG-03 / T-11-06: iframe with minimal sandbox permissions
-    this.iframe = container.createEl('iframe');
+    this.iframe = container.createEl('iframe', { cls: 'magzdown-iframe magzdown-hidden' });
     this.iframe.setAttribute('src', this.iframeUrl);
-    this.iframe.setAttribute('style', 'width:100%; height:100%; border:none; display:none;');
     this.iframe.setAttribute(
       'sandbox',
       'allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox'
@@ -103,8 +91,8 @@ export class MagzdownView extends ItemView {
 
       // Swap splash for iframe once HTTP response loaded, and start MAGZDOWN_READY timeout
       this.iframe.addEventListener('load', () => {
-        if (this.splashEl) this.splashEl.style.display = 'none';
-        if (this.iframe) this.iframe.style.display = 'block';
+        this.splashEl?.addClass('magzdown-hidden');
+        this.iframe?.removeClass('magzdown-hidden');
         this.startReadyTimeout();
       });
     }
@@ -124,7 +112,7 @@ export class MagzdownView extends ItemView {
 
   async onClose(): Promise<void> {
     if (this.debounceTimer !== null) {
-      clearTimeout(this.debounceTimer);
+      window.clearTimeout(this.debounceTimer);
       this.debounceTimer = null;
     }
     this.clearReadyTimeout();
@@ -146,7 +134,7 @@ export class MagzdownView extends ItemView {
     const expectedOrigin = new URL(this.iframeUrl).origin;
     if (event.origin !== expectedOrigin) return;
 
-    const msg = event.data;
+    const msg = event.data as IncomingEmbedMessage | null;
     if (!msg || msg.version !== 1) return;
 
     if (msg.type === 'MAGZDOWN_READY') {
@@ -163,9 +151,9 @@ export class MagzdownView extends ItemView {
   private handleEditorChange = (editor: Editor, _info: MarkdownView | MarkdownFileInfo): void => {
     // D-03: Debounce at 500ms (midpoint of 400-600ms range per SYNC-02)
     if (this.debounceTimer !== null) {
-      clearTimeout(this.debounceTimer);
+      window.clearTimeout(this.debounceTimer);
     }
-    this.debounceTimer = setTimeout(() => {
+    this.debounceTimer = window.setTimeout(() => {
       this.debounceTimer = null;
       this.syncActiveContent();
     }, 500);
@@ -180,7 +168,7 @@ export class MagzdownView extends ItemView {
 
     // D-04: bypass debounce — send immediately on note switch
     if (this.debounceTimer !== null) {
-      clearTimeout(this.debounceTimer);
+      window.clearTimeout(this.debounceTimer);
       this.debounceTimer = null;
     }
     this.syncActiveContent();
@@ -203,7 +191,7 @@ export class MagzdownView extends ItemView {
     if (fmMatch) {
       body = raw.slice(fmMatch[0].length);
       try {
-        const parsed = parseYaml(fmMatch[1]) ?? {};
+        const parsed = (parseYaml(fmMatch[1]) ?? {}) as Record<string, unknown>;
         metadata = {
           title: typeof parsed.title === 'string' ? parsed.title : undefined,
           author: typeof parsed.author === 'string' ? parsed.author : undefined,
@@ -259,62 +247,44 @@ export class MagzdownView extends ItemView {
     }
   }
 
-  // SETT-05 / D-06: Error UI replaces the iframe (display:none) rather than overlaying.
+  // SETT-05 / D-06: Error UI replaces the iframe (hidden) rather than overlaying.
   // Lazy construction: first call builds the DOM; subsequent calls update heading/body text in place.
   private showError(heading: string, body: string): void {
     // Hide the iframe + splash while error is visible
-    if (this.iframe) this.iframe.style.display = 'none';
-    if (this.splashEl) this.splashEl.style.display = 'none';
+    this.iframe?.addClass('magzdown-hidden');
+    this.splashEl?.addClass('magzdown-hidden');
 
     if (!this.errorEl) {
       // First-time construction — DOM helpers only (no HTML-injection APIs)
       this.errorEl = this.contentEl.createDiv({ cls: 'magzdown-error' });
       this.errorEl.setAttribute('role', 'alert');
       this.errorEl.setAttribute('aria-live', 'assertive');
-      this.errorEl.setAttribute(
-        'style',
-        'display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; gap:24px; padding:32px; text-align:center; background:var(--background-primary);'
-      );
 
       const iconEl = this.errorEl.createDiv({ cls: 'magzdown-error-icon' });
       iconEl.setAttribute('aria-hidden', 'true');
-      iconEl.setAttribute('style', 'color:var(--text-error); width:32px; height:32px;');
       setIcon(iconEl, 'alert-triangle');
 
       this.errorHeadingEl = this.errorEl.createDiv({ cls: 'magzdown-error-heading' });
-      this.errorHeadingEl.setAttribute(
-        'style',
-        'color:var(--text-normal); font-weight:600; font-size:1rem;'
-      );
-
       this.errorBodyEl = this.errorEl.createDiv({ cls: 'magzdown-error-body' });
-      this.errorBodyEl.setAttribute(
-        'style',
-        'color:var(--text-muted); font-size:0.875rem; max-width:320px;'
-      );
 
       this.retryBtn = this.errorEl.createEl('button', {
         cls: 'magzdown-error-retry mod-cta',
         text: 'Retry',
       });
-      this.retryBtn.setAttribute(
-        'style',
-        'background:var(--interactive-accent); color:var(--text-on-accent); min-height:32px; padding:6px 16px; border:none; border-radius:4px; cursor:pointer;'
-      );
       this.retryBtn.addEventListener('click', this.handleRetry);
     }
 
     // Update (or set) the copy on every invocation
     if (this.errorHeadingEl) this.errorHeadingEl.setText(heading);
     if (this.errorBodyEl) this.errorBodyEl.setText(body);
-    this.errorEl.style.display = 'flex';
+    this.errorEl.removeClass('magzdown-hidden');
 
     // A11y: focus the retry button so keyboard + screen reader users land on the action
     if (this.retryBtn) this.retryBtn.focus();
   }
 
   private hideError(): void {
-    if (this.errorEl) this.errorEl.style.display = 'none';
+    this.errorEl?.addClass('magzdown-hidden');
   }
 
   // D-07 / Pitfall 6: Retry reloads the iframe, resets timeout, shows splash again.
@@ -322,9 +292,9 @@ export class MagzdownView extends ItemView {
   private handleRetry = (): void => {
     this.clearReadyTimeout();
     this.hideError();
-    if (this.splashEl) this.splashEl.style.display = 'flex';
+    this.splashEl?.removeClass('magzdown-hidden');
     if (this.iframe) {
-      this.iframe.style.display = 'none';  // load event will flip back to block on success
+      this.iframe.addClass('magzdown-hidden'); // load event will reveal it again on success
       this.iframe.src = this.iframeUrl;
       this.startReadyTimeout();
     }

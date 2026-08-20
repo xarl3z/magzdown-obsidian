@@ -20,26 +20,29 @@ export default class MagzdownPlugin extends Plugin {
 
     // PLUG-01: Ribbon icon — visible in Obsidian left sidebar
     this.addRibbonIcon('book-open', 'Open Magzdown', () => {
-      this.activateMagzdownView();
+      void this.activateMagzdownView();
     });
 
     // PLUG-02: Command palette command — searchable via Ctrl/Cmd+P
+    // Obsidian prefixes the plugin name in the UI, so neither id nor name repeats it
     this.addCommand({
-      id: 'open-magzdown',
-      name: 'Open Magzdown preview',
-      callback: () => this.activateMagzdownView(),
+      id: 'open-preview',
+      name: 'Open preview',
+      callback: () => {
+        void this.activateMagzdownView();
+      },
     });
 
     this.addSettingTab(new MagzdownSettingTab(this.app, this));
   }
 
-  onunload(): void {
-    // Clean up all Magzdown views — removes iframe and message listeners
-    this.app.workspace.detachLeavesOfType(VIEW_TYPE_MAGZDOWN);
-  }
+  // No onunload cleanup: leaves must NOT be detached on unload — that would
+  // reset the pane's position the next time the plugin loads. Obsidian
+  // detaches the view's DOM and listeners itself via onClose.
 
   async loadSettings(): Promise<void> {
-    this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
+    const saved = (await this.loadData()) as Partial<MagzdownSettings> | null;
+    this.settings = Object.assign({}, DEFAULT_SETTINGS, saved ?? {});
   }
 
   async saveSettings(): Promise<void> {
@@ -66,7 +69,7 @@ export default class MagzdownPlugin extends Plugin {
 
     if (existing.length > 0) {
       // D-09: Pane already exists — reveal it instead of creating a new one
-      this.app.workspace.revealLeaf(existing[0]);
+      await this.app.workspace.revealLeaf(existing[0]);
       return;
     }
 
@@ -82,7 +85,7 @@ export default class MagzdownPlugin extends Plugin {
     // Reveal the newly created leaf
     const leaves = this.app.workspace.getLeavesOfType(VIEW_TYPE_MAGZDOWN);
     if (leaves.length > 0) {
-      this.app.workspace.revealLeaf(leaves[0]);
+      await this.app.workspace.revealLeaf(leaves[0]);
     }
   }
 
