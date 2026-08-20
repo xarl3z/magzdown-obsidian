@@ -1,0 +1,11 @@
+{
+  "id": "magzdown",
+  "name": "Magzdown",
+  "version": "1.0.0",
+  "minAppVersion": "1.1.1",
+  "description": "Beautiful markdown reading in Obsidian, powered by magzdown.com",
+  "author": "xarl3z",
+  "authorUrl": "https://magzdown.com",
+  "fundingUrl": "https://magzdown.com/pricing",
+  "isDesktopOnly": true
+}
