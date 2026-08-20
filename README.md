@@ -25,9 +25,9 @@ Before the plugin appears in the Obsidian community plugin list, you can install
 4. Enable **Magzdown** under **Settings → Community plugins**.
 5. Click the Magzdown ribbon icon (a book) to open the reading pane, or run **Open Magzdown preview** from the command palette.
 
-### Install from Obsidian community plugins
+### Install from the community plugin directory
 
-*Coming soon.* Once the community plugin PR is merged, you will be able to install Magzdown directly from **Settings → Community plugins → Browse** in Obsidian.
+Once the plugin is accepted into the community directory, install it directly from **Settings → Community plugins → Browse**. Until then, use the BRAT method above.
 
 ## Settings
 

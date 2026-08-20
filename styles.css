@@ -4,8 +4,11 @@
   overflow: hidden;
 }
 
-.magzdown-hidden {
-  display: none !important;
+.magzdown-view-content .magzdown-hidden,
+.magzdown-splash.magzdown-hidden,
+.magzdown-iframe.magzdown-hidden,
+.magzdown-error.magzdown-hidden {
+  display: none;
 }
 
 /* Splash screen shown while the iframe loads */
