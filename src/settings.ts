@@ -13,7 +13,7 @@ export interface MagzdownSettings {
 }
 
 export const DEFAULT_SETTINGS: MagzdownSettings = {
-  iframeUrl: 'https://magzdown.com/embed',
+  iframeUrl: 'https://www.magzdown.com/embed',
   colorMode: 'light',
   layoutMode: 'scroll',
   stylePreset: 'classic',
