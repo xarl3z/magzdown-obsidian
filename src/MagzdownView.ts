@@ -3,7 +3,8 @@
 // SYNC-01/SYNC-02: Editor tracking with debounced content sync
 // SYNC-03: Active leaf change tracking for note switches
 // SYNC-04: Render guard (drop-and-replace) prevents message pile-up
-import { ItemView, WorkspaceLeaf, MarkdownView, Editor, MarkdownFileInfo, parseYaml, setIcon } from 'obsidian';
+import { ItemView, MarkdownView, parseYaml, setIcon } from 'obsidian';
+import type { Editor, MarkdownFileInfo, WorkspaceLeaf} from 'obsidian';
 import type { MetadataUpdatePayload } from './types/embed-protocol';
 import type MagzdownPlugin from './main';
 import type { MagzdownSettings } from './settings';

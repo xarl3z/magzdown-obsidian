@@ -2,9 +2,11 @@
 // PLUG-02: Command palette entry
 // D-08: Opens Magzdown view in right leaf split
 // D-09: Singleton — reveals existing pane rather than creating a second one
-import { App, Plugin, PluginSettingTab, Setting } from 'obsidian';
+import { Plugin, PluginSettingTab, Setting } from 'obsidian';
 import { MagzdownView, VIEW_TYPE_MAGZDOWN } from './MagzdownView';
-import { MagzdownSettings, DEFAULT_SETTINGS } from './settings';
+import { DEFAULT_SETTINGS } from './settings';
+import type { MagzdownSettings} from './settings';
+import type { App} from 'obsidian';
 import type { PreferenceUpdatePayload } from './types/embed-protocol';
 
 export default class MagzdownPlugin extends Plugin {
