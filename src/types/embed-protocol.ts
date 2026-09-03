@@ -18,7 +18,15 @@ export interface ContentUpdatePayload {
 export interface PreferenceUpdatePayload {
   colorMode?: 'light' | 'dark'
   layoutMode?: 'scroll' | 'paginated'
-  stylePreset?: 'classic' | 'modern' | 'editorial' | 'minimal'
+  stylePreset?:
+    | 'classic'
+    | 'modern'
+    | 'editorial'
+    | 'minimal'
+    | 'couture'
+    | 'gazette'
+    | 'pulse'
+    | 'headliner'
 }
 
 export interface MetadataUpdatePayload {

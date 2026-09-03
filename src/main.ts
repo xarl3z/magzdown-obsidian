@@ -5,6 +5,7 @@
 import { App, Plugin, PluginSettingTab, Setting } from 'obsidian';
 import { MagzdownView, VIEW_TYPE_MAGZDOWN } from './MagzdownView';
 import { MagzdownSettings, DEFAULT_SETTINGS } from './settings';
+import type { PreferenceUpdatePayload } from './types/embed-protocol';
 
 export default class MagzdownPlugin extends Plugin {
   settings!: MagzdownSettings;
@@ -145,9 +146,15 @@ class MagzdownSettingTab extends PluginSettingTab {
           .addOption('modern', 'Modern')
           .addOption('editorial', 'Editorial')
           .addOption('minimal', 'Minimal')
+          .addOption('couture', 'Couture')
+          .addOption('gazette', 'Gazette')
+          .addOption('pulse', 'Pulse')
+          .addOption('headliner', 'Headliner (Pro)')
           .setValue(this.plugin.settings.stylePreset)
           .onChange(async (value) => {
-            this.plugin.settings.stylePreset = value as 'classic' | 'modern' | 'editorial' | 'minimal';
+            this.plugin.settings.stylePreset = value as NonNullable<
+              PreferenceUpdatePayload['stylePreset']
+            >;
             await this.plugin.saveSettings();
             this.plugin.broadcastPreferences();
           }),

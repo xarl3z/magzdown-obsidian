@@ -1,33 +1,29 @@
 # Magzdown for Obsidian
 
-Beautiful markdown reading in Obsidian, powered by [magzdown.com](https://magzdown.com).
+Beautiful markdown reading in Obsidian, powered by [magzdown.com](https://www.magzdown.com).
 
 Magzdown is a magazine-style reader that turns your notes into immersive, typographically refined reading sessions. This plugin embeds the Magzdown reader in a side pane so you can write in Obsidian and read what you write — live, in a different font, with the active note mirrored in real time.
+
+![The Magzdown pane rendering a note alongside the Obsidian editor.](./docs/screenshot-pane.png)
+*The Magzdown pane rendering a note alongside the Obsidian editor.*
+
+## Install
+
+Magzdown is an official community plugin:
+
+1. Open **Settings → Community plugins → Browse** and search for **Magzdown**.
+2. Click **Install**, then **Enable**.
+3. Click the Magzdown ribbon icon (a book) to open the reading pane, or run **Open Magzdown preview** from the command palette.
 
 ## Features
 
 - **Live preview**: The active note renders in the Magzdown pane as you type, with a 500ms debounce so it stays responsive.
-- **Frontmatter aware**: `title`, `author`, and `date` from YAML frontmatter flow into the reader's export metadata.
-- **Four reading styles**: Choose from Classic, Modern, Editorial, or Minimal typographic presets.
+- **Frontmatter aware**: `title`, `author`, and `date` from YAML frontmatter become a byline with reading time in the reader.
+- **Eight reading styles**: Presets modeled on real magazine genres — literary Classic, graphic Modern, art-directed Editorial, Swiss Minimal, fashion-glossy Couture, news-weekly Gazette, tech-magazine Pulse, and the slab-serif Headliner.
+- **Print-grade typography**: Drop caps, decks from an opening italic line, small-caps openers, true italics, and footnotes as margin notes on wide panes.
 - **Light and dark**: Color mode respects your preference and applies instantly.
-- **Two layouts**: Continuous scroll or page-by-page paginated reading.
+- **Two layouts**: Continuous scroll or page-by-page paginated reading with print-style running heads and page folios.
 - **Graceful errors**: If the reader fails to load, the pane shows a recovery message with a retry action.
-
-## Install
-
-### Install via BRAT (early access)
-
-Before the plugin appears in the Obsidian community plugin list, you can install it using [BRAT](https://github.com/TfTHacker/obsidian42-brat):
-
-1. Install BRAT from the Obsidian community plugin list and enable it.
-2. Open the BRAT settings and choose **Add Beta plugin**.
-3. Paste this repository's URL (for example, `https://github.com/xarl3z/magzdown-obsidian`) and confirm.
-4. Enable **Magzdown** under **Settings → Community plugins**.
-5. Click the Magzdown ribbon icon (a book) to open the reading pane, or run **Open Magzdown preview** from the command palette.
-
-### Install from the community plugin directory
-
-Once the plugin is accepted into the community directory, install it directly from **Settings → Community plugins → Browse**. Until then, use the BRAT method above.
 
 ## Settings
 
@@ -38,7 +34,11 @@ Open **Settings → Magzdown** to configure:
 - **Style preset** — Typographic preset for the reader. Changes font, rhythm, and margins.
 - **Embed URL (advanced)** — Override the Magzdown embed URL. Leave as default unless you are developing locally.
 
-Changes apply instantly in any open Magzdown pane — no save button.
+Changes apply instantly in any open Magzdown pane — no save button. The pane's own toolbar offers further typography controls: fonts, color themes, and text alignment.
+
+## Free and Pro
+
+The plugin is free and open source (MIT). The embedded Magzdown reader is free to use — all eight style presets' defaults, print typography, and both layouts included. The magzdown.com webapp offers an optional one-time Pro purchase that unlocks extra color themes, fonts, theme packs, and PDF/EPUB export; nothing in the plugin's core reading flow requires it.
 
 ## Requirements
 
