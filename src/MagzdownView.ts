@@ -60,7 +60,7 @@ export class MagzdownView extends ItemView {
     return 'book-open';
   }
 
-  async onOpen(): Promise<void> {
+  onOpen(): Promise<void> {
     const container = this.contentEl;
     container.empty();
 
@@ -110,7 +110,7 @@ export class MagzdownView extends ItemView {
     );
   }
 
-  async onClose(): Promise<void> {
+  onClose(): Promise<void> {
     if (this.debounceTimer !== null) {
       window.clearTimeout(this.debounceTimer);
       this.debounceTimer = null;
@@ -123,6 +123,7 @@ export class MagzdownView extends ItemView {
     this.errorHeadingEl = null;
     this.errorBodyEl = null;
     this.retryBtn = null;
+    return Promise.resolve();
   }
 
   // T-11-03: Validate version === 1 before processing any incoming message
@@ -179,7 +180,7 @@ export class MagzdownView extends ItemView {
     // Try getActiveViewOfType first, fall back to tracked leaf when side pane has focus
     // Use view type string check instead of instanceof (cross-realm issue in Electron)
     const view = this.app.workspace.getActiveViewOfType(MarkdownView)
-      ?? (this.lastMarkdownLeaf?.view?.getViewType() === 'markdown' ? this.lastMarkdownLeaf.view as MarkdownView : null);
+      ?? (this.lastMarkdownLeaf?.view.getViewType() === 'markdown' ? this.lastMarkdownLeaf.view as MarkdownView : null);
     if (!view || !this.iframe?.contentWindow) return;
 
     const raw = view.editor.getValue();
