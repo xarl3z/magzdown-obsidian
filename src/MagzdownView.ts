@@ -108,6 +108,7 @@ export class MagzdownView extends ItemView {
     this.registerEvent(
       this.app.workspace.on('active-leaf-change', this.handleActiveLeafChange)
     );
+    return Promise.resolve();
   }
 
   onClose(): Promise<void> {
